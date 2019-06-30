@@ -34,7 +34,7 @@
 <layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="no" active="yes"/>
 <layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
@@ -1889,44 +1889,139 @@ design rules under a new name.</description>
 </pass>
 </autorouter>
 <elements>
-<element name="C1" library="rcl_upravena" package="E5-10,5" value="" x="40.79875" y="20.47875" rot="R90"/>
-<element name="D1" library="diode" package="SOD123" value="" x="12.22375" y="39.37"/>
-<element name="D2" library="diode" package="SOD123" value="" x="12.22375" y="36.83"/>
-<element name="IC1" library="uln-udn_upravena" package="DIL16_BIG_SMD" value="ULN2004A_BIG_SMD" x="12.7" y="22.86" rot="R270"/>
-<element name="IM1" library="esp32" package="DEVKITC_BIG_SMD" value="DEVKITC_BIG_SMD" x="17.145" y="2.54"/>
-<element name="Q1" library="transistor-power" package="TO220BV" value="IRF4905" x="34.29" y="45.72" rot="R90"/>
-<element name="Q2" library="transistor-power" package="TO220BV" value="IRF4905" x="34.29" y="10.95375" rot="R90"/>
-<element name="R1" library="rcl_upravena" package="R0805S" value="100k" x="43.815" y="36.195" rot="R270"/>
-<element name="R2" library="rcl_upravena" package="R0805S" value="18k" x="7.62" y="39.37" rot="R180"/>
-<element name="R3" library="rcl_upravena" package="R0805S" value="33k" x="7.62" y="41.275" rot="R180"/>
-<element name="R4" library="rcl_upravena" package="R0805S" value="100k" x="43.33875" y="13.17625" rot="R90"/>
-<element name="R5" library="rcl_upravena" package="R0805S" value="18k" x="7.62" y="36.83" rot="R180"/>
-<element name="R6" library="rcl_upravena" package="R0805S" value="33k" x="7.62" y="34.925" rot="R180"/>
-<element name="R7" library="rcl_upravena" package="R0805S" value="4k7" x="6.0325" y="1.27"/>
-<element name="R8" library="rcl_upravena" package="R0805S" value="1k" x="8.255" y="44.1325" rot="R180"/>
-<element name="U$1" library="wirepad_smd" package="3X5MM" value="PAD_1SIDE_LARGE" x="41.75125" y="45.72" rot="R270"/>
-<element name="U$2" library="wirepad_smd" package="3X5MM" value="PAD_1SIDE_LARGE" x="41.75125" y="41.75125" rot="R270"/>
-<element name="U$3" library="wirepad_smd" package="3X5MM" value="PAD_1SIDE_LARGE" x="40.48125" y="12.22375" rot="R180"/>
-<element name="U$4" library="wirepad_smd" package="3X5MM" value="PAD_1SIDE_LARGE" x="40.48125" y="4.92125"/>
-<element name="R9" library="rcl_upravena" package="R2512" value="10R" x="24.4475" y="33.3375"/>
-<element name="R10" library="rcl_upravena" package="R2512" value="10R" x="24.4475" y="29.21"/>
-<element name="R11" library="rcl_upravena" package="R2512" value="10R" x="24.4475" y="25.0825"/>
+<element name="C1" library="rcl_upravena" package="E5-10,5" value="" x="40.79875" y="20.47875" smashed="yes" rot="R90">
+<attribute name="NAME" x="38.05555" y="25.17775" size="1.27" layer="25" ratio="10" rot="R90"/>
+<attribute name="VALUE" x="44.02455" y="17.35455" size="1.27" layer="27" ratio="10" rot="R90"/>
+</element>
+<element name="D1" library="diode" package="SOD123" value="" x="12.22375" y="39.37" smashed="yes">
+<attribute name="NAME" x="11.12375" y="40.37" size="1.27" layer="25"/>
+<attribute name="VALUE" x="11.12375" y="37.07" size="1.27" layer="27"/>
+</element>
+<element name="D2" library="diode" package="SOD123" value="" x="12.22375" y="36.83" smashed="yes">
+<attribute name="NAME" x="11.12375" y="37.83" size="1.27" layer="25"/>
+<attribute name="VALUE" x="11.12375" y="34.53" size="1.27" layer="27"/>
+</element>
+<element name="IC1" library="uln-udn_upravena" package="DIL16_BIG_SMD" value="ULN2004A_BIG_SMD" x="12.7" y="22.86" smashed="yes" rot="R270">
+<attribute name="NAME" x="9.779" y="33.401" size="1.27" layer="25" ratio="10"/>
+<attribute name="VALUE" x="12.065" y="30.353" size="1.27" layer="27" ratio="10" rot="R270"/>
+</element>
+<element name="IM1" library="esp32" package="DEVKITC_BIG_SMD" value="DEVKITC_BIG_SMD" x="17.145" y="2.54" smashed="yes"/>
+<element name="Q1" library="transistor-power" package="TO220BV" value="IRF4905" x="34.29" y="45.72" smashed="yes" rot="R90">
+<attribute name="NAME" x="40.3352" y="40.64" size="1.27" layer="25" ratio="10" rot="R90"/>
+<attribute name="VALUE" x="34.29" y="41.91" size="1.27" layer="27" ratio="10" rot="R90"/>
+</element>
+<element name="Q2" library="transistor-power" package="TO220BV" value="IRF4905" x="34.29" y="10.95375" smashed="yes" rot="R90">
+<attribute name="NAME" x="40.3352" y="5.87375" size="1.27" layer="25" ratio="10" rot="R90"/>
+<attribute name="VALUE" x="34.29" y="7.14375" size="1.27" layer="27" ratio="10" rot="R90"/>
+</element>
+<element name="R1" library="rcl_upravena" package="R0805S" value="33k" x="43.815" y="36.195" smashed="yes" rot="R270">
+<attribute name="NAME" x="45.085" y="36.83" size="1.27" layer="25" rot="R270"/>
+<attribute name="VALUE" x="48.895" y="38.1" size="1.27" layer="27" rot="R270"/>
+</element>
+<element name="R2" library="rcl_upravena" package="R0805S" value="5k6" x="7.62" y="39.37" smashed="yes" rot="R180">
+<attribute name="NAME" x="8.255" y="38.1" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="-0.635" y="40.64" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="R3" library="rcl_upravena" package="R0805S" value="3k3" x="7.62" y="41.275" smashed="yes" rot="R180">
+<attribute name="NAME" x="8.255" y="40.005" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="-0.635" y="42.545" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="R4" library="rcl_upravena" package="R0805S" value="33k" x="43.33875" y="13.17625" smashed="yes" rot="R90">
+<attribute name="NAME" x="42.06875" y="12.54125" size="1.27" layer="25" rot="R90"/>
+<attribute name="VALUE" x="49.68875" y="11.27125" size="1.27" layer="27" rot="R90"/>
+</element>
+<element name="R5" library="rcl_upravena" package="R0805S" value="5k6" x="7.62" y="36.83" smashed="yes" rot="R180">
+<attribute name="NAME" x="8.255" y="35.56" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="-0.635" y="38.1" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="R6" library="rcl_upravena" package="R0805S" value="3k3" x="7.62" y="34.925" smashed="yes" rot="R180">
+<attribute name="NAME" x="8.255" y="33.655" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="-0.635" y="36.195" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="R7" library="rcl_upravena" package="R0805S" value="4k7" x="6.0325" y="1.27" smashed="yes">
+<attribute name="NAME" x="5.3975" y="2.54" size="1.27" layer="25"/>
+<attribute name="VALUE" x="4.1275" y="-2.54" size="1.27" layer="27"/>
+</element>
+<element name="R8" library="rcl_upravena" package="R0805S" value="1k" x="8.255" y="44.1325" smashed="yes" rot="R180">
+<attribute name="NAME" x="8.89" y="42.8625" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="-1.27" y="45.4025" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="U$1" library="wirepad_smd" package="3X5MM" value="PAD_1SIDE_LARGE" x="41.75125" y="45.72" smashed="yes" rot="R270"/>
+<element name="U$2" library="wirepad_smd" package="3X5MM" value="PAD_1SIDE_LARGE" x="41.75125" y="41.75125" smashed="yes" rot="R270"/>
+<element name="U$3" library="wirepad_smd" package="3X5MM" value="PAD_1SIDE_LARGE" x="40.48125" y="12.22375" smashed="yes" rot="R180"/>
+<element name="U$4" library="wirepad_smd" package="3X5MM" value="PAD_1SIDE_LARGE" x="40.48125" y="4.92125" smashed="yes"/>
+<element name="R9" library="rcl_upravena" package="R2512" value="10R" x="24.4475" y="33.3375" smashed="yes">
+<attribute name="NAME" x="21.9075" y="35.2425" size="1.27" layer="25"/>
+<attribute name="VALUE" x="51.1175" y="30.1625" size="1.27" layer="27"/>
+</element>
+<element name="R10" library="rcl_upravena" package="R2512" value="10R" x="24.4475" y="29.21" smashed="yes">
+<attribute name="NAME" x="21.9075" y="31.115" size="1.27" layer="25"/>
+<attribute name="VALUE" x="51.1175" y="28.575" size="1.27" layer="27"/>
+</element>
+<element name="R11" library="rcl_upravena" package="R2512" value="10R" x="24.4475" y="25.0825" smashed="yes">
+<attribute name="NAME" x="21.9075" y="26.9875" size="1.27" layer="25"/>
+<attribute name="VALUE" x="51.1175" y="26.9875" size="1.27" layer="27"/>
+</element>
 <element name="LED1" library="RGB_LED" package="HEX_HEATSINK" value="" x="26.035" y="29.21" rot="MR0"/>
-<element name="U$5" library="piezo" package="PIEZO" value="PIEZO" x="16.8275" y="5.08" rot="R90"/>
-<element name="JP1" library="pinhead_smd" package="PINH2X04SMD" value="" x="20.955" y="50.8"/>
-<element name="Q3" library="transistors" package="SOT23_DIST" value="" x="26.3525" y="46.0375" rot="R90"/>
-<element name="Q4" library="transistors" package="SOT23_DIST" value="" x="21.2725" y="43.18" rot="R90"/>
-<element name="R12" library="rcl_upravena" package="R0805S" value="18k" x="19.20875" y="46.0375" rot="R180"/>
-<element name="R13" library="rcl_upravena" package="R0805S" value="18k" x="17.145" y="43.18" rot="R180"/>
-<element name="Q5" library="transistors" package="SOT23_DIST" value="" x="27.305" y="11.43" rot="R180"/>
-<element name="Q6" library="transistors" package="SOT23_DIST" value="" x="22.225" y="11.1125" rot="R180"/>
-<element name="R14" library="rcl_upravena" package="R0805S" value="18k" x="24.765" y="9.525" rot="R90"/>
-<element name="R15" library="rcl_upravena" package="R0805S" value="18k" x="20.955" y="8.255" rot="R180"/>
-<element name="R16" library="rcl_upravena" package="R0805S" value="18k" x="34.925" y="3.96875" rot="R90"/>
-<element name="JP4" library="pinhead_smd" package="PINH2X04SMD" value="" x="10.795" y="50.8"/>
-<element name="IC2" library="v-reg" package="78XXS" value="" x="48.5775" y="29.21" rot="R270"/>
-<element name="JP2" library="pinhead" package="1X04/90" value="" x="22.86" y="0.79375" rot="R180"/>
-<element name="JP3" library="pinhead" package="1X05" value="" x="41.11625" y="32.0675" rot="R90"/>
+<element name="U$5" library="piezo" package="PIEZO" value="PIEZO" x="16.8275" y="5.08" smashed="yes" rot="R90">
+<attribute name="NAME" x="14.3637" y="4.5212" size="1.27" layer="25" ratio="10" rot="R180"/>
+</element>
+<element name="JP1" library="pinhead_smd" package="PINH2X04SMD" value="" x="20.955" y="50.8" smashed="yes">
+<attribute name="NAME" x="16.51" y="53.6575" size="1" layer="25" font="vector" ratio="16" rot="R90"/>
+<attribute name="VALUE" x="26.3525" y="53.6575" size="1" layer="27" font="vector" ratio="16" rot="R90"/>
+</element>
+<element name="Q3" library="transistors" package="SOT23_DIST" value="" x="26.3525" y="46.0375" smashed="yes" rot="R90">
+<attribute name="NAME" x="24.4475" y="44.1325" size="1.27" layer="25" rot="R90"/>
+<attribute name="VALUE" x="29.5275" y="44.1325" size="1.27" layer="27" rot="R90"/>
+</element>
+<element name="Q4" library="transistors" package="SOT23_DIST" value="" x="21.2725" y="43.18" smashed="yes" rot="R90">
+<attribute name="NAME" x="19.3675" y="41.275" size="1.27" layer="25" rot="R90"/>
+<attribute name="VALUE" x="24.4475" y="41.275" size="1.27" layer="27" rot="R90"/>
+</element>
+<element name="R12" library="rcl_upravena" package="R0805S" value="4k7" x="19.20875" y="46.0375" smashed="yes" rot="R180">
+<attribute name="NAME" x="19.84375" y="44.7675" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="19.84375" y="53.6575" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="R13" library="rcl_upravena" package="R0805S" value="4k7" x="17.145" y="43.18" smashed="yes" rot="R180">
+<attribute name="NAME" x="17.78" y="41.91" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="16.51" y="53.34" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="Q5" library="transistors" package="SOT23_DIST" value="" x="27.305" y="11.43" smashed="yes" rot="R180">
+<attribute name="NAME" x="29.21" y="9.525" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="29.21" y="14.605" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="Q6" library="transistors" package="SOT23_DIST" value="" x="22.225" y="11.1125" smashed="yes" rot="R180">
+<attribute name="NAME" x="24.13" y="9.2075" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="24.13" y="14.2875" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="R14" library="rcl_upravena" package="R0805S" value="4k7" x="24.765" y="9.525" smashed="yes" rot="R90">
+<attribute name="NAME" x="23.495" y="8.89" size="1.27" layer="25" rot="R90"/>
+<attribute name="VALUE" x="27.305" y="8.89" size="1.27" layer="27" rot="R90"/>
+</element>
+<element name="R15" library="rcl_upravena" package="R0805S" value="4k7" x="20.955" y="8.255" smashed="yes" rot="R180">
+<attribute name="NAME" x="21.59" y="6.985" size="1.27" layer="25" rot="R180"/>
+<attribute name="VALUE" x="21.59" y="10.795" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="R16" library="rcl_upravena" package="R0805S" value="0R" x="34.925" y="3.96875" smashed="yes" rot="R90">
+<attribute name="NAME" x="33.655" y="3.33375" size="1.27" layer="25" rot="R90"/>
+<attribute name="VALUE" x="37.30625" y="-0.635" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="JP4" library="pinhead_smd" package="PINH2X04SMD" value="" x="10.795" y="50.8" smashed="yes">
+<attribute name="NAME" x="6.35" y="53.6575" size="1" layer="25" font="vector" ratio="16" rot="R90"/>
+<attribute name="VALUE" x="16.1925" y="53.6575" size="1" layer="27" font="vector" ratio="16" rot="R90"/>
+</element>
+<element name="IC2" library="v-reg" package="78XXS" value="" x="48.5775" y="29.21" smashed="yes" rot="R270">
+<attribute name="NAME" x="42.5323" y="34.29" size="1.27" layer="25" ratio="10" rot="R270"/>
+<attribute name="VALUE" x="40.9575" y="34.29" size="1.27" layer="27" ratio="10" rot="R270"/>
+</element>
+<element name="JP2" library="pinhead" package="1X04/90" value="" x="22.86" y="0.79375" smashed="yes" rot="R180">
+<attribute name="NAME" x="28.575" y="4.60375" size="1.27" layer="25" ratio="10" rot="R270"/>
+<attribute name="VALUE" x="15.875" y="5.23875" size="1.27" layer="27" rot="R270"/>
+</element>
+<element name="JP3" library="pinhead" package="1X05" value="" x="41.11625" y="32.0675" smashed="yes" rot="R90">
+<attribute name="NAME" x="39.28745" y="25.6413" size="1.27" layer="25" ratio="10" rot="R90"/>
+<attribute name="VALUE" x="44.29125" y="25.7175" size="1.27" layer="27" rot="R90"/>
+</element>
 </elements>
 <signals>
 <signal name="GND" airwireshidden="yes">
