@@ -18,6 +18,8 @@ void trap(const string& msg = "")
     while(1);
 }
 
+void buzzer(bool en) { digitalWrite(PIN_BUZZER_P, en ? BUZZER_ON : BUZZER_OFF); }
+
 #include "controller.hpp"
 #include "flasher.hpp"
 

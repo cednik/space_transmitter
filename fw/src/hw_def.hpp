@@ -1,6 +1,7 @@
 #pragma once
 
 #include <display.hpp>
+#include <PS2Keyboard.h>
 
 const gpio_num_t PIN_DEV_TYPE     = GPIO_NUM_17;
 
@@ -73,6 +74,8 @@ typedef Display_t <
     detail::display::DISPLAY_PIN_BACKGLIGHT > Display;
 Display display ( detail::display::display_port );
 
+PS2Keyboard keyboard;
+
 void init_hw(void) {
     pinMode(PWR1_MEAS, INPUT);
     pinMode(PWR2_MEAS, INPUT);
@@ -102,10 +105,12 @@ void init_hw(void) {
 
         pinMode(PIN_DEV_TYPE, INPUT);
         digitalWrite(PIN_BUZZER_N, HIGH);
+        digitalWrite(PIN_BUZZER_P, HIGH);
         BUZZER_OFF = HIGH;
         BUZZER_ON = LOW;
         detail::i2c_internal.init();
         display.init();
+        keyboard.begin(PS2_DATA, PS2_CLK);
     } else {
 
         device_type = DeviceType::FLASHER;
