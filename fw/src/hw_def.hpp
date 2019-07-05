@@ -2,6 +2,7 @@
 
 #include <display.hpp>
 #include <PS2Keyboard.h>
+#include <SmartLeds.h>
 
 const gpio_num_t PIN_DEV_TYPE     = GPIO_NUM_17;
 
@@ -19,6 +20,7 @@ const gpio_num_t PWR2_EN          = GPIO_NUM_14;
 
 const gpio_num_t IO1_EN           = GPIO_NUM_2;
 const gpio_num_t IO_ILED_EN       = GPIO_NUM_18;
+const gpio_num_t PIN_ILED         = GPIO_NUM_19;
 
 const gpio_num_t PIN_RED          = GPIO_NUM_26;
 const gpio_num_t PIN_GREEN        = GPIO_NUM_25;
@@ -39,6 +41,9 @@ const uint8_t WHITE  = 3;
 
 uint8_t BUZZER_ON = HIGH;
 uint8_t BUZZER_OFF = LOW;
+
+const int LED_COUNT = 1;
+const int LED_CHANNEL = 0;
 
 namespace detail {
 
@@ -76,6 +81,8 @@ Display display ( detail::display::display_port );
 
 PS2Keyboard keyboard;
 
+SmartLed bargraf( LED_WS2812B, LED_COUNT, PIN_ILED, LED_CHANNEL, SingleBuffer );
+
 void init_hw(void) {
     pinMode(PWR1_MEAS, INPUT);
     pinMode(PWR2_MEAS, INPUT);
@@ -85,6 +92,9 @@ void init_hw(void) {
 
     pinMode(IO1_EN, OUTPUT);
     digitalWrite(IO1_EN, HIGH);
+
+    pinMode(IO_ILED_EN, OUTPUT);
+    digitalWrite(IO_ILED_EN, HIGH);
     
     ledcSetup(RED, PWM_FREQ, PWM_RESOLUTION);
     ledcSetup(GREEN, PWM_FREQ, PWM_RESOLUTION);
@@ -111,6 +121,7 @@ void init_hw(void) {
         detail::i2c_internal.init();
         display.init();
         keyboard.begin(PS2_DATA, PS2_CLK);
+
     } else {
 
         device_type = DeviceType::FLASHER;

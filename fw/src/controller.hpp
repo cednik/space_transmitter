@@ -15,7 +15,23 @@ void setup() {
 
 void loop() {
     if (keyboard.available()) {
-        display.write(char(keyboard.read()));
+        int c = keyboard.read();
+        switch(c) {
+        case 'r':
+            bargraf[0] = Rgb(255, 0, 0);
+            bargraf.show();
+            break;
+        case 'g':
+            bargraf[0] = Rgb(0, 255, 0);
+            bargraf.show();
+            break;
+        case 'b':
+            bargraf[0] = Rgb(0, 0, 255);
+            bargraf.show();
+            break;
+        default:
+            display.write(char(c));
+        }
     }
 }
 
