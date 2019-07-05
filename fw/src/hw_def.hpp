@@ -2,13 +2,13 @@
 
 #include <display.hpp>
 
-const gpio_num_t PIN_DEV_TYPE = GPIO_NUM_17;
+const gpio_num_t PIN_DEV_TYPE     = GPIO_NUM_17;
 
-const gpio_num_t I2C_SDA = GPIO_NUM_0;
-const gpio_num_t I2C_SCL = GPIO_NUM_15;
+const gpio_num_t I2C_SDA          = GPIO_NUM_0;
+const gpio_num_t I2C_SCL          = GPIO_NUM_15;
 
-const gpio_num_t PS2_DATA = GPIO_NUM_23;
-const gpio_num_t PS2_CLK  = GPIO_NUM_22;
+const gpio_num_t PS2_DATA         = GPIO_NUM_23;
+const gpio_num_t PS2_CLK          = GPIO_NUM_22;
 
 const gpio_num_t PWR1_MEAS        = GPIO_NUM_34;
 const gpio_num_t PWR2_MEAS        = GPIO_NUM_35;
@@ -86,12 +86,10 @@ void init_hw(void) {
     ledcSetup(RED, PWM_FREQ, PWM_RESOLUTION);
     ledcSetup(GREEN, PWM_FREQ, PWM_RESOLUTION);
     ledcSetup(BLUE, PWM_FREQ, PWM_RESOLUTION);
-    ledcSetup(WHITE, PWM_FREQ, PWM_RESOLUTION);
     
     ledcAttachPin(PIN_RED, RED);
     ledcAttachPin(PIN_GREEN, GREEN);
     ledcAttachPin(PIN_BLUE, BLUE);
-    ledcAttachPin(PIN_WHITE, WHITE);
     
     pinMode(PIN_BUZZER_N, OUTPUT);
     pinMode(PIN_BUZZER_P, OUTPUT);
@@ -99,12 +97,20 @@ void init_hw(void) {
     pinMode(PIN_DEV_TYPE, INPUT_PULLUP);
     wait(msec(1));
     if (digitalRead(PIN_DEV_TYPE) == LOW) {
+
+        device_type = DeviceType::CONTROLLER;
+
         pinMode(PIN_DEV_TYPE, INPUT);
         digitalWrite(PIN_BUZZER_N, HIGH);
         BUZZER_OFF = HIGH;
         BUZZER_ON = LOW;
+        detail::i2c_internal.init();
+        display.init();
+    } else {
+
+        device_type = DeviceType::FLASHER;
+
+        ledcSetup(WHITE, PWM_FREQ, PWM_RESOLUTION);
+        ledcAttachPin(PIN_WHITE, WHITE);
     }
-    
-    detail::i2c_internal.init();
-    display.init();
 }
