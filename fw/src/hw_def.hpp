@@ -121,7 +121,10 @@ void init_hw(void) {
         detail::i2c_internal.init();
         display.init();
         keyboard.begin(PS2_DATA, PS2_CLK);
-
+        for (int i = 0; i != LED_COUNT; ++i)
+            bargraf[i] = Rgb(0, 0, 0);
+        bargraf.show();
+        bargraf.wait();
     } else {
 
         device_type = DeviceType::FLASHER;
