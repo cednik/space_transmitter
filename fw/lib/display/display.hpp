@@ -362,7 +362,7 @@ public:
 	bool restore_cursor() {
 		if (m_cursor_stack.empty())
 			return false;
-		setCursor(m_cursor_stack.top());
+		cursor(m_cursor_stack.top());
 		m_cursor_stack.pop();
 		return true;
 	}
