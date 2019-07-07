@@ -134,19 +134,19 @@ public:
     }
 };
 
-template <typename TDisplay, typename Keyboard>
+template <typename Display, typename Keyboard>
 class TerminalScreen
-    :public Screen<TDisplay, Keyboard>
+    :public Screen<Display, Keyboard>
 {
-    typedef ScrollLine<TDisplay> TextLine;
+    typedef ScrollLine<Display> TextLine;
 
     class InputLine {
-        typedef ScrollLine<TDisplay> Prompt;
+        typedef ScrollLine<Display> Prompt;
         typedef typename Prompt::pos_type pos_type;
-        typedef EditLine<TDisplay> Line;
+        typedef EditLine<Display> Line;
     public:
         InputLine(
-            TDisplay& display,
+            Display& display,
             pos_type line,
             pos_type begin,
             pos_type length,
@@ -200,7 +200,7 @@ class TerminalScreen
 
             Line& line() { return m_input; }
     private:
-        TDisplay& m_disp;
+        Display& m_disp;
         pos_type m_line;
         pos_type m_begin;
         Prompt m_prompt;
@@ -212,11 +212,11 @@ class TerminalScreen
     TerminalScreen(TerminalScreen&) = delete;
 public:
     TerminalScreen(
-        TDisplay& display,
+        Display& display,
         Keyboard& keyboard,
         std::string prompt,
         int x = 0, int y = 0, int w = -1, int h = -1)
-            : Screen<TDisplay, Keyboard> (display, keyboard),
+            : Screen<Display, Keyboard> (display, keyboard),
               m_x(clamp(x, 0, this->m_disp.width()-1)),
               m_y(clamp(y, 0, this->m_disp.height()-1)),
               m_w(clamp(w == -1 ? this->m_disp.width() : w, 1, this->m_disp.width()-m_x)),
