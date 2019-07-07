@@ -211,22 +211,25 @@ class TerminalScreen
     TerminalScreen() = delete;
     TerminalScreen(TerminalScreen&) = delete;
 public:
+    typedef std::function<void(std::string, TerminalScreen<Display, Keyboard>&)> Callback;
+
     TerminalScreen(
         Display& display,
         Keyboard& keyboard,
         std::string prompt,
+        Callback onEnter = nullptr,
         int x = 0, int y = 0, int w = -1, int h = -1)
             : Screen<Display, Keyboard> (display, keyboard),
               m_x(clamp(x, 0, this->m_disp.width()-1)),
               m_y(clamp(y, 0, this->m_disp.height()-1)),
               m_w(clamp(w == -1 ? this->m_disp.width() : w, 1, this->m_disp.width()-m_x)),
-              m_h(clamp(h == -1 ? this->m_disp.height() : h, 1, this->m_disp.height()-m_y)),
+              m_h(clamp(h == -1 ? this->m_disp.height() : h, 2, this->m_disp.height()-m_y)),
               m_prompt(prompt),
               m_output(),
               m_input(this->m_disp, m_y + m_h - 1, m_x, m_w, m_prompt, "", false),
-              m_enter(0)
+              m_onEnter(onEnter)
         {
-            for(size_t i = 0; i != m_h; ++i)
+            for(size_t i = 0; i != m_h-1; ++i)
                 m_output.emplace_back(new TextLine(
                     this->m_disp, m_y+i, m_x, m_w, "", false));
         }
@@ -235,9 +238,17 @@ public:
         this->m_disp.enable_scrolling(false);
         for(auto& l: m_output)
             l->restart();
-        (m_output.end()-1)->get()->stop();
         m_input.visible(true);
         m_input.show();
+    }
+
+    virtual void onEnter(Callback fcn) { m_onEnter = fcn; }
+
+    virtual void printLine(const std::string& line) {
+        for (auto p = m_output.begin() + 1; p != m_output.end(); ++p)
+            (p-1)->get()->set(p->get()->text());
+        (m_output.end()-1)->get()->set(line);
+        process();
     }
 
     virtual void process() {
@@ -251,7 +262,12 @@ public:
                 case PS2_RIGHTARROW: input.right(); break;
                 case PS2_BACKSPACE: input.erase(); break;
                 case PS2_ESC: input.clear(); break;
-                case PS2_ENTER: ++m_enter; break;
+                case PS2_ENTER:
+                    printLine(m_prompt + m_input.line().text());
+                    if (m_onEnter)
+                        m_onEnter(m_input.line().text(), *this);
+                    m_input.line().clear();
+                    break;
                 default: input.push(c); break;
             }
         }
@@ -266,7 +282,7 @@ private:
     std::string m_prompt;
     std::vector<std::unique_ptr<TextLine> > m_output;
     InputLine m_input;
-    int m_enter;
+    Callback m_onEnter;
 };
 
 #endif

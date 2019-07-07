@@ -6,7 +6,12 @@
 namespace controller {
 
 typedef TerminalScreen<Display, PS2Keyboard> Terminal;
-Terminal terminal(display, keyboard, ">>>");
+
+void onEnter(std::string input, Terminal& terminal) {
+    terminal.printLine("Got " + input);
+}
+
+Terminal terminal(display, keyboard, ">>>", onEnter);
 
 void setup() {
     display.backlight();
