@@ -21,6 +21,8 @@ const gpio_num_t PWR2_MEAS        = GPIO_NUM_35;
 const gpio_num_t PWR1_EN          = GPIO_NUM_27;
 const gpio_num_t PWR2_EN          = GPIO_NUM_14;
 
+const gpio_num_t PWR_EN          = GPIO_NUM_12;
+
 const gpio_num_t IO1_EN           = GPIO_NUM_2;
 const gpio_num_t IO_ILED_EN       = GPIO_NUM_18;
 const gpio_num_t PIN_ILED         = GPIO_NUM_19;
@@ -117,6 +119,7 @@ void init_hw(void) {
         device_type = DeviceType::CONTROLLER;
 
         pinMode(PIN_DEV_TYPE, INPUT);
+        pinMode(PWR_EN, OUTPUT);
         digitalWrite(PIN_BUZZER_N, HIGH);
         digitalWrite(PIN_BUZZER_P, HIGH);
         BUZZER_OFF = HIGH;

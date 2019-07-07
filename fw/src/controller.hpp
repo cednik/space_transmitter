@@ -11,19 +11,46 @@ ScrollLine<Display> status(display, 0, 0, 0, "", false);
 
 typedef TerminalScreen<Display, PS2Keyboard> Terminal;
 
-void onEnter(std::string input, Terminal& terminal) {
-    terminal.printLine("Got " + input);
+void cmd_parser(std::string input, Terminal& terminal) {
+    static bool sudo = true;
+    if (input == "sudo") {
+        terminal.printLine("password:");
+        terminal.onEnter([&](std::string input, Terminal& terminal){
+            if (input == "lopaticka")
+                sudo = true;
+            else
+                terminal.printLine("Access denied");
+            terminal.onEnter(cmd_parser);
+        });
+    } else if (sudo) {
+        if (input == "on") {
+            digitalWrite(PWR_EN, HIGH);
+        } else if (input == "on1") {
+            digitalWrite(PWR1_EN, HIGH);
+        } else if (input == "on2") {
+            digitalWrite(PWR2_EN, HIGH);
+        } else if (input == "off") {
+            digitalWrite(PWR_EN, LOW);
+        } else if (input == "off1") {
+            digitalWrite(PWR1_EN, LOW);
+        } else if (input == "off2") {
+            digitalWrite(PWR2_EN, LOW);
+        } else {
+            terminal.printLine("Unknown cmd");
+        }
+    } else {
+        terminal.printLine("Unknown cmd");
+    }
 }
 
-Terminal terminal(display, keyboard, ">>>", onEnter, 0, 1);
+Terminal terminal(display, keyboard, ">>>", cmd_parser, 0, 1);
 
-timeout generator_meas(msec(50));
-const int generator_print_div = 4;
+timeout meas(msec(50));
+timeout status_print(msec(250));
 
 Adc adc_gen_p(PIN_GEN_P);
 Adc adc_gen_n(PIN_GEN_N);
 
-int generator_print_prescaller = 0;
 int charge = 0;
 int pwr_sum = 0;
 
@@ -36,20 +63,25 @@ void setup() {
     display.clear();
     terminal.show();
     Adc::begin();
-    generator_meas.restart();
+    meas.restart();
+    status_print.restart();
 }
 
 void loop() {
-    if (generator_meas) {
-        generator_meas.ack();
+    if (meas) {
+        meas.ack();
         int pwr = adc_gen_p.value() - adc_gen_n.value();
         charge += pwr;
         pwr_sum += pwr;
-        if (++generator_print_prescaller == generator_print_div) {
-            status = format("P{:4} C{:6}", pwr_sum / generator_print_div, charge);
-            pwr_sum = 0;
-            generator_print_prescaller = 0;
-        }
+    }
+    if (status_print) {
+        status_print.ack();
+        status = format("P{:4} C{:6} {}{}",
+            pwr_sum/5,
+            charge,
+            digitalRead(PWR2_MEAS),
+            digitalRead(PWR1_MEAS));
+        pwr_sum = 0;
     }
     Adc::process();
     status.process();
