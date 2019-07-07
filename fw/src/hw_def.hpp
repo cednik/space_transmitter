@@ -4,6 +4,9 @@
 #include <PS2Keyboard.h>
 #include <SmartLeds.h>
 
+const uint8_t PIN_GEN_P           = 36;
+const uint8_t PIN_GEN_N           = 39;
+
 const gpio_num_t PIN_DEV_TYPE     = GPIO_NUM_17;
 
 const gpio_num_t I2C_SDA          = GPIO_NUM_0;

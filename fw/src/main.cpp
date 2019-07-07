@@ -11,6 +11,7 @@ using namespace std;
 
 #include <format.h>
 using fmt::print;
+using fmt::format;
 
 void trap(const string& msg = "")
 {
