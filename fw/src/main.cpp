@@ -4,6 +4,11 @@ enum class DeviceType { CONTROLLER, FLASHER };
 DeviceType device_type = DeviceType::FLASHER;
 
 #include "hw_def.hpp"
+#include "server.hpp"
+
+static const char* SSID = "STIC";
+static const char* PSWD = "1123581321";
+static const uint16_t registration_server_port = 16384;
 
 #include <string>
 
