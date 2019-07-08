@@ -56,12 +56,10 @@ int pwr_sum = 0;
 
 IPAddress controller_ip;
 
-void registration_process(std::string msg, WiFiClient& client) {
+void server_process(std::string msg, WiFiClient& client) {
     terminal.printLine(format("{}: {}", client.remoteIP().toString().c_str(), msg));
     client.print(format("Received \"{}\" from {}\n", msg, client.remoteIP().toString().c_str()).c_str());
 }
-
-LineServer registration_server(registration_server_port, registration_process);
 
 void setup() {
     display.backlight();
@@ -74,7 +72,7 @@ void setup() {
     WiFi.softAP(SSID, PSWD);
     controller_ip = WiFi.softAPIP();
     terminal.printLine(format("CTRL IP {}", controller_ip.toString().c_str()));
-    registration_server.begin();
+    server.begin(server_port, server_process);
     meas.restart();
     status_print.restart();
 }
@@ -95,7 +93,7 @@ void loop() {
             digitalRead(PWR1_MEAS));
         pwr_sum = 0;
     }
-    registration_server.process();
+    server.process();
     Adc::process();
     status.process();
     terminal.process();

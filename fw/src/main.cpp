@@ -8,7 +8,9 @@ DeviceType device_type = DeviceType::FLASHER;
 
 static const char* SSID = "STIC";
 static const char* PSWD = "1123581321";
-static const uint16_t registration_server_port = 16384;
+static const uint16_t server_port = 16384;
+
+LineServer server;
 
 #include <string>
 

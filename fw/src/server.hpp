@@ -19,11 +19,15 @@ class LineServer {
 public:
     typedef std::function<void(std::string msg, WiFiClient& client)> Callback;
 
-    LineServer(uint16_t port, Callback onReceive)
+    LineServer(uint16_t port = 0, Callback onReceive = nullptr)
         : m_server(port), m_onReceive(onReceive)
     {}
     void begin() { m_server.begin(); }
-    void begin(uint16_t port) { m_server.begin(port); }
+    void begin(uint16_t port){ m_server.begin(port); }
+    void begin(uint16_t port, Callback onReceive) {
+        m_server.begin(port);
+        m_onReceive = onReceive;
+    }
     void process() {
         WiFiClient client = m_server.available();
         if (client)
