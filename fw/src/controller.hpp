@@ -22,6 +22,8 @@ void cmd_parser(std::string input, Terminal& terminal) {
                 terminal.printLine("Access denied");
             terminal.onEnter(cmd_parser);
         });
+    } else if (input == "shutdown") {
+        digitalWrite(PWR_EN, LOW);
     } else if (sudo) {
         if (input == "on") {
             digitalWrite(PWR_EN, HIGH);
