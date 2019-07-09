@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "wifi.hpp"
+#include "delayedTask.hpp"
 
 namespace flasher {
 
@@ -20,23 +21,36 @@ void server_process(std::string input, WiFiClient& client) {
     LED_MAP_t::const_iterator led = LED.find(cmd);
     if (led != LED.end()) {
         int brightness = 0;
+        DelayedTask::Time time = 0;
         switch (arg.size()) {
         case 1:
             debug(format("Led {} without argument!\n", cmd));
             break;
         case 2:
-            if (std::istringstream(arg[1])>>brightness)
+            if ((std::istringstream(arg[1])>>brightness))
                 ledcWrite(led->second, brightness);
             else
                 debug("Can not convert brightness to number");
             break;
         case 3:
         default:
-            print(Serial, "Led {} set to {} for {} ms\n", cmd, arg[1], arg[2]);
+            if (!(std::istringstream(arg[1])>>brightness)) {
+                debug("Can not convert brightness to number");
+                break;
+            }
+            if (!(std::istringstream(arg[2])>>time)) {
+                debug("Can not convert time to number");
+                break;
+            }
+            ledcWrite(led->second, brightness);
+            DelayedTask::create(msec(time), [led]() {
+                ledcWrite(led->second, 0);
+                debug(format("Switch off led {}.", led->first));
+            } );
             break;
         }
     } else if (cmd == CMD::power_next) {
-        const uint8_t value = (arg.size() >= 2 && arg[1] != "0") ? HIGH : LOW;
+        const uint8_t value = (arg.size() >= 2 && arg[1] == "0") ? LOW : HIGH;
         switch(output_port) {
             case 1: digitalWrite(PWR1_EN, value); break;
             case 2: digitalWrite(PWR2_EN, value); break;
@@ -46,9 +60,9 @@ void server_process(std::string input, WiFiClient& client) {
             ID = arg[1];
             debug(format("ID set to {}", ID));
         } else
-            print(Serial, "ID without argument!");
+            debug("ID without argument!");
     } else {
-        print(Serial, "Unknown command \"{}\"\n", cmd);
+        debug(format("Unknown command \"{}\"\n", cmd));
     }
 }
 
@@ -79,25 +93,17 @@ void setup() {
     print(Serial, "My IP: {}\n", WiFi.localIP().toString().c_str());
     print(Serial, "Controller IP: {}\n", controller_ip.toString().c_str());
     server.begin(server_port, server_process);
-    print(Serial, "Sent: {}\n", sendLine(controller_ip, server_port, CMD::flasher));
+    sendLine(controller_ip, server_port, CMD::flasher);
 }
 
 void loop() {
     server.process();
+    DelayedTask::process();
     if (Serial.available()) {
         char c = Serial.read();
         switch(c) {
         case '\r':
             Serial.write('\n');
-            break;
-        case 'i':
-            print(Serial, "Sent: {}\n", sendLine(controller_ip, server_port, CMD::flasher));
-            break;
-        case '2':
-            print(Serial, "Sent: {}\n", sendLine({192, 168, 4, 2}, server_port, CMD::flasher));
-            break;
-        case '3':
-            print(Serial, "Sent: {}\n", sendLine({192, 168, 4, 3}, server_port, CMD::flasher));
             break;
         case 'R':
             ESP.restart();

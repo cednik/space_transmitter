@@ -67,7 +67,7 @@ void cmd_parser(std::string input, Terminal& terminal) {
             flashers.clear();
         } else if (input == "flash") {
             for (const auto& ip: flashers)
-                sendLine(ip, server_port, "w 16, 500");
+                sendLine(ip, server_port, "w 16 100");
         } else if (input == "reboot") {
             ESP.restart();
         } else {

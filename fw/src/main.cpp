@@ -45,8 +45,12 @@ std::vector<std::string> split(const std::string& str, char separator = ' ', siz
     for(;max != 0; --max) {
         size_t next = str.find(separator, pos);
         res.push_back(str.substr(pos, next-pos));
-        while(str[next] == separator)
-            ++next;
+        while(str[next] == separator) {
+            if (++next == str.size()) {
+                next = std::string::npos;
+                break;
+            }
+        }
         pos = next;
         if (pos == std::string::npos)
             break;
@@ -66,7 +70,7 @@ void setup() {
         case DeviceType::CONTROLLER: controller::setup(); break;
         case DeviceType::FLASHER   :    flasher::setup(); break;
     }
-    debug(device_name + " started\n");
+    debug(device_name + " started");
 }
 
 void loop() {
