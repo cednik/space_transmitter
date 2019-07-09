@@ -4,6 +4,9 @@
 #include <PS2Keyboard.h>
 #include <SmartLeds.h>
 
+#include <unordered_map>
+#include <string>
+
 const uint8_t PIN_GEN_P           = 36;
 const uint8_t PIN_GEN_N           = 39;
 
@@ -87,6 +90,14 @@ Display display ( detail::display::display_port );
 PS2Keyboard keyboard;
 
 SmartLed bargraf( LED_WS2812B, LED_COUNT, PIN_ILED, LED_CHANNEL, SingleBuffer );
+
+typedef std::unordered_map<std::string, uint8_t> LED_MAP_t;
+const LED_MAP_t LED( {
+    { "r", RED   },
+    { "g", GREEN },
+    { "b", BLUE  },
+    { "w", WHITE }
+} );
 
 void init_hw(void) {
     pinMode(PWR1_MEAS, INPUT);

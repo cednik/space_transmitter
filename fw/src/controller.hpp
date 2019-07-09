@@ -11,6 +11,32 @@ ScrollLine<Display> status(display, 0, 0, 0, "", false);
 
 typedef TerminalScreen<Display, PS2Keyboard> Terminal;
 
+void cmd_parser(std::string input, Terminal& terminal);
+
+Terminal terminal(display, keyboard, ">>>", cmd_parser, 0, 1);
+
+timeout meas(msec(50));
+timeout status_print(msec(250));
+
+Adc adc_gen_p(PIN_GEN_P);
+Adc adc_gen_n(PIN_GEN_N);
+
+int charge = 0;
+int pwr_sum = 0;
+
+IPAddress controller_ip;
+
+std::vector<IPAddress> flashers;
+
+void server_process(std::string input, WiFiClient& client) {
+    debug(format("recvd from {}: {}", client.remoteIP().toString().c_str(), show_whites(input)));
+    if (input == CMD::flasher) {
+        sendLine(client.remoteIP(), server_port, format( "{} {}", CMD::id, flashers.size()));
+        terminal.printLine(format("Flasher {} registered at {}", flashers.size(), client.remoteIP().toString().c_str()));
+        flashers.push_back(client.remoteIP());
+    }
+}
+
 void cmd_parser(std::string input, Terminal& terminal) {
     static bool sudo = true;
     if (input == "sudo") {
@@ -37,6 +63,13 @@ void cmd_parser(std::string input, Terminal& terminal) {
             digitalWrite(PWR1_EN, LOW);
         } else if (input == "off2") {
             digitalWrite(PWR2_EN, LOW);
+        } else if (input == "clrflash") {
+            flashers.clear();
+        } else if (input == "flash") {
+            for (const auto& ip: flashers)
+                sendLine(ip, server_port, "w 16, 500");
+        } else if (input == "reboot") {
+            ESP.restart();
         } else {
             terminal.printLine("Unknown cmd");
         }
@@ -45,25 +78,8 @@ void cmd_parser(std::string input, Terminal& terminal) {
     }
 }
 
-Terminal terminal(display, keyboard, ">>>", cmd_parser, 0, 1);
-
-timeout meas(msec(50));
-timeout status_print(msec(250));
-
-Adc adc_gen_p(PIN_GEN_P);
-Adc adc_gen_n(PIN_GEN_N);
-
-int charge = 0;
-int pwr_sum = 0;
-
-IPAddress controller_ip;
-
-void server_process(std::string msg, WiFiClient& client) {
-    terminal.printLine(format("{}: {}", client.remoteIP().toString().c_str(), msg));
-    client.print(format("Received \"{}\" from {}\n", msg, client.remoteIP().toString().c_str()).c_str());
-}
-
 void setup() {
+    device_name = "STCU";
     display.backlight();
     display.cursor(display.OFF);
     display.enable_scrolling(false);

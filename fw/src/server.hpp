@@ -16,6 +16,9 @@ class LineServer {
     };
     typedef std::list<Client>::iterator pclient_t;
 
+    LineServer(const LineServer&) = delete;
+    void operator = (const LineServer&) = delete;
+
 public:
     typedef std::function<void(std::string msg, WiFiClient& client)> Callback;
 
@@ -33,19 +36,22 @@ public:
         if (client)
             m_clients.emplace_back(client, "");
         for (auto p_client = m_clients.begin(); p_client != m_clients.end();) {
+            while (p_client->client.available()) {
+                char c = p_client->client.read();
+                if (c == '\n') {
+                    _onReceive(p_client);
+                    p_client->buffer.clear();
+                } else
+                    p_client->buffer += c;
+            }
             if (p_client->client.connected()) {
-                if (p_client->client.available()) {
-                    char c = p_client->client.read();
-                    if (c == '\n') {
-                        _onReceive(p_client);
-                        p_client->buffer.clear();
-                    } else
-                        p_client->buffer += c;
-                }
                 ++p_client;
             } else {
-                if (!p_client->buffer.empty())
+                if (!p_client->buffer.empty()) {
+                    debug("Received incomplete packet:");
                     _onReceive(p_client);
+                }
+                p_client->client.stop();
                 auto next = std::next(p_client);
                 m_clients.erase(p_client);
                 p_client = next;
@@ -53,30 +59,6 @@ public:
         }
     }
 private:
-    void process_connection() {
-        WiFiClient client = m_server.available();
-        if (client)
-            m_clients.emplace_back(client, "");
-    }
-    void process_clients() {
-        for (auto& client: m_clients) {
-            if (client.client.connected()) {
-                if (client.client.available()) {
-                    char c = client.client.read();
-                    if (c == '\n') {
-                        if (m_onReceive)
-                            m_onReceive(client.buffer, client.client);
-                        client.buffer.clear();
-                    } else
-                        client.buffer += c;
-                }
-            } else {
-                if (!client.buffer.empty() && m_onReceive)
-                    m_onReceive(client.buffer, client.client);
-                
-            }
-        }
-    }
     void _onReceive(pclient_t pclient) {
         if (m_onReceive)
             m_onReceive(pclient->buffer, pclient->client);
@@ -85,3 +67,13 @@ private:
     Callback m_onReceive;
     std::list<Client> m_clients;
 };
+
+size_t sendLine(const IPAddress& addr, uint16_t port, const std::string& line) {
+    WiFiClient client;
+    if (!client.connect(addr, port))
+        return false;
+    size_t written = client.print((line + '\n').c_str());
+    client.flush();
+    client.stop();
+    return written;
+}
