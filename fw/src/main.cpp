@@ -12,14 +12,6 @@ DeviceType device_type = DeviceType::FLASHER;
 
 #include "hw_def.hpp"
 
-#include "server.hpp"
-
-static const char SSID[] = "STIC";
-static const char PSWD[] = "1123581321";
-static const uint16_t server_port = 16384;
-
-LineServer server;
-
 #include <string>
 #include <vector>
 #include <climits>
@@ -36,6 +28,16 @@ void trap(const string& msg = "")
         delay(180);
     }
 }
+
+#include "server.hpp"
+#include "syncTask.hpp"
+
+static const char SSID[] = "STIC";
+static const char PSWD[] = "1123581321";
+static const uint16_t server_port = 16384; // tcp
+static const uint16_t sync_port = 16384; // udp
+
+LineServer server;
 
 void buzzer(bool en) { digitalWrite(PIN_BUZZER_P, en ? BUZZER_ON : BUZZER_OFF); }
 

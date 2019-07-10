@@ -10,6 +10,20 @@ std::string ID;
 
 int output_port = 0;
 
+void set_led(uint8_t led, uint32_t brightness, DelayedTask::Time time = 0) {
+    if (led == BUZZER)
+        buzzer(brightness != 0);
+    else
+        ledcWrite(led, brightness);
+    if (time != 0)
+        DelayedTask::create(time, [led]() {
+            if (led == BUZZER)
+                buzzer(false);
+            else
+                ledcWrite(led, 0);
+        } );
+}
+
 void server_process(std::string input, WiFiClient& client) {
     debug(format("recvd from {}: {}", client.remoteIP().toString().c_str(), show_whites(input)));
     auto arg = split(input);
@@ -20,34 +34,31 @@ void server_process(std::string input, WiFiClient& client) {
     auto& cmd = arg[0];
     LED_MAP_t::const_iterator led = LED.find(cmd);
     if (led != LED.end()) {
-        int brightness = 0;
-        DelayedTask::Time time = 0;
-        switch (arg.size()) {
-        case 1:
-            debug(format("Led {} without argument!\n", cmd));
-            break;
-        case 2:
-            if ((std::istringstream(arg[1])>>brightness))
-                ledcWrite(led->second, brightness);
-            else
+        if (arg.size() >= 2) {
+            int brightness = 0;
+            if ((std::istringstream(arg[1])>>brightness)) {
+                DelayedTask::Time time = 0;
+                if (arg.size() >= 3) {
+                    if ((std::istringstream(arg[2])>>time)) {
+                        if (arg.size() >= 4) {
+                            SyncTask::create(arg[3],
+                                [=](const std::string&, IPAddress, uint16_t) {
+                                    set_led(led->second, brightness, time);
+                                } );
+                        } else {
+                            set_led(led->second, brightness, time);
+                        }
+                    } else {
+                        debug("Can not convert time to number");
+                    }
+                } else {
+                    set_led(led->second, brightness, time);
+                }
+            } else {
                 debug("Can not convert brightness to number");
-            break;
-        case 3:
-        default:
-            if (!(std::istringstream(arg[1])>>brightness)) {
-                debug("Can not convert brightness to number");
-                break;
             }
-            if (!(std::istringstream(arg[2])>>time)) {
-                debug("Can not convert time to number");
-                break;
-            }
-            ledcWrite(led->second, brightness);
-            DelayedTask::create(msec(time), [led]() {
-                ledcWrite(led->second, 0);
-                debug(format("Switch off led {}.", led->first));
-            } );
-            break;
+        } else {
+            debug("Led without argument");
         }
     } else if (cmd == CMD::power_next) {
         const uint8_t value = (arg.size() >= 2 && arg[1] == "0") ? LOW : HIGH;
@@ -93,12 +104,14 @@ void setup() {
     print(Serial, "My IP: {}\n", WiFi.localIP().toString().c_str());
     print(Serial, "Controller IP: {}\n", controller_ip.toString().c_str());
     server.begin(server_port, server_process);
+    SyncTask::begin(sync_port);
     sendLine(controller_ip, server_port, CMD::flasher);
 }
 
 void loop() {
     server.process();
     DelayedTask::process();
+    SyncTask::process();
     if (Serial.available()) {
         char c = Serial.read();
         switch(c) {

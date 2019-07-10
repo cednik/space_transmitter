@@ -42,10 +42,13 @@ const double PWM_FREQ = 20000; // Hz
 const uint8_t PWM_RESOLUTION = 8; // bits
 
 // PWM channel
-const uint8_t RED    = 0;
-const uint8_t GREEN  = 1;
-const uint8_t BLUE   = 2;
-const uint8_t WHITE  = 3;
+enum LED_CHANNEL {
+    RED    = 0,
+    GREEN  = 1,
+    BLUE   = 2,
+    WHITE  = 3,
+    BUZZER = 4
+};
 
 uint8_t BUZZER_ON = HIGH;
 uint8_t BUZZER_OFF = LOW;
@@ -93,10 +96,11 @@ SmartLed bargraf( LED_WS2812B, LED_COUNT, PIN_ILED, LED_CHANNEL, SingleBuffer );
 
 typedef std::unordered_map<std::string, uint8_t> LED_MAP_t;
 const LED_MAP_t LED( {
-    { "r", RED   },
-    { "g", GREEN },
-    { "b", BLUE  },
-    { "w", WHITE }
+    { "r", RED    },
+    { "g", GREEN  },
+    { "b", BLUE   },
+    { "w", WHITE  },
+    { "a", BUZZER }
 } );
 
 void init_hw(void) {
