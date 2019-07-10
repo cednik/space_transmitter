@@ -1,44 +1,37 @@
-#include <thread>
-#include <mutex>
-
 #include <screens.hpp>
-
-#include "adc.hpp"
+#include <sstream>
 
 namespace controller {
-
-ScrollLine<Display> status(display, 0, 0, 0, "", false);
 
 typedef TerminalScreen<Display, PS2Keyboard> Terminal;
 
 void cmd_parser(std::string input, Terminal& terminal);
 
-Terminal terminal(display, keyboard, ">>>", cmd_parser, 0, 1);
+Terminal terminal(display, keyboard, ">>>", cmd_parser, 0, 0);
 
-timeout meas(msec(50));
-timeout status_print(msec(250));
+int settings_complete = 0;
 
-Adc adc_gen_p(PIN_GEN_P);
-Adc adc_gen_n(PIN_GEN_N);
+timeout s(msec(1000));
+uint32_t pwrup_time = 0;
+const uint32_t shutdown_time = 1800;
 
-int charge = 0;
-int pwr_sum = 0;
-
-IPAddress controller_ip;
-
-std::vector<IPAddress> flashers;
-
-void server_process(std::string input, WiFiClient& client) {
-    debug(format("recvd from {}: {}", client.remoteIP().toString().c_str(), show_whites(input)));
-    if (input == CMD::flasher) {
-        sendLine(client.remoteIP(), server_port, format( "{} {}", CMD::id, flashers.size()));
-        terminal.printLine(format("Flasher {} registered at {}", flashers.size(), client.remoteIP().toString().c_str()));
-        flashers.push_back(client.remoteIP());
+void shutdown_process() {
+    if (s) {
+        s.ack();
+        if (++pwrup_time >= shutdown_time)
+            digitalWrite(PWR_EN, LOW);
     }
 }
 
+int tx_pin = -1;
+int rx_pin = -1;
+
 void cmd_parser(std::string input, Terminal& terminal) {
-    static bool sudo = true;
+    pwrup_time = 0;
+    static bool sudo = false;
+    auto arg = split(input);
+    if (arg.size() == 0)
+        return;
     if (input == "sudo") {
         terminal.printLine("password:");
         terminal.onEnter([&](std::string input, Terminal& terminal){
@@ -50,6 +43,81 @@ void cmd_parser(std::string input, Terminal& terminal) {
         });
     } else if (input == "shutdown") {
         digitalWrite(PWR_EN, LOW);
+    } else if (arg[0] == "antenna") {
+        if (arg.size() != 2) {
+            terminal.printLine("Bad arguments count");
+        } else {
+            if (arg[1] == "hexagon") {
+                terminal.printLine("Antenna type set");
+                settings_complete |= 1;
+            } else {
+                terminal.printLine("Unknown antenna type");
+            }
+        }
+    } else if (arg[0] == "polarity") {
+        if (arg.size() != 2) {
+            terminal.printLine("Bad arguments count");
+        } else {
+            if (arg[1] == "circccw") {
+                terminal.printLine("Polarity set");
+                settings_complete |= 2;
+                tx_pin = PWR1_EN;
+                rx_pin = PWR2_MEAS;
+            } else if (arg[1] == "circcw") {
+                terminal.printLine("Polarity set");
+                settings_complete |= 2;
+                tx_pin = PWR2_EN;
+                rx_pin = PWR1_MEAS;
+            } else {
+                terminal.printLine("Unknown polarity type");
+            }
+        }
+    } else if (arg[0] == "freq") {
+        if (arg.size() != 2) {
+            terminal.printLine("Bad arguments count");
+        } else {
+            double freq = 0;
+            if ((std::istringstream(arg[1]) >> freq)) {
+                if (freq < 1800 || freq > 2000) {
+                    terminal.printLine("Frequency out of range");
+                } else {
+                    terminal.printLine(format("Frequency set to {}", freq));
+                    settings_complete |= 4;
+                }
+            } else {
+                terminal.printLine("Not a number");
+            }
+        }
+    } else if (arg[0] == "message") {
+        if (settings_complete != 7) {
+            terminal.printLine("Antenna not set");
+        } else if (arg.size() != 1) {
+            terminal.printLine("Bad arguments count");
+        } else {
+            terminal.m_input.prompt().set("...");
+            terminal.m_input.prompt().process();
+            terminal.onEnter([](std::string input, Terminal& terminal) {
+                if (input.size() > 96) {
+                    terminal.printLine("Too long message");
+                } else {
+                    terminal.printLine("Transmitting...");
+                    digitalWrite(tx_pin, HIGH);
+                    timeout t(sec(10));
+                    while(digitalRead(rx_pin) == LOW) {
+                        terminal.view_process();
+                        shutdown_process();
+                        if (t)
+                            break;
+                    }
+                    terminal.printLine("Message sent");
+                    terminal.printLine("Low energy - shutting down");
+                    DelayedTask::create(sec(4), [](){ digitalWrite(PWR_EN, LOW); });
+                }
+                terminal.m_input.prompt().set(">>>");
+                terminal.m_input.prompt().process();
+                terminal.onEnter(cmd_parser);
+            });
+        }
     } else if (sudo) {
         if (input == "on") {
             digitalWrite(PWR_EN, HIGH);
@@ -63,13 +131,10 @@ void cmd_parser(std::string input, Terminal& terminal) {
             digitalWrite(PWR1_EN, LOW);
         } else if (input == "off2") {
             digitalWrite(PWR2_EN, LOW);
-        } else if (input == "clrflash") {
-            flashers.clear();
-        } else if (input == "flash") {
-            for (const auto& ip: flashers)
-                sendLine(ip, server_port, "w 16 100");
         } else if (input == "reboot") {
             ESP.restart();
+        } else if (input == "set") {
+            settings_complete = 7;
         } else {
             terminal.printLine("Unknown cmd");
         }
@@ -79,42 +144,32 @@ void cmd_parser(std::string input, Terminal& terminal) {
 }
 
 void setup() {
-    device_name = "STCU";
+    digitalWrite(PWR_EN, HIGH);
     display.backlight();
     display.cursor(display.OFF);
     display.enable_scrolling(false);
     display.clear();
+    print(display, "Ready");
+    delay(2000);
+    display.clear();
+    display.backlight(0);
+    display.off();
+    s.restart();
+    while (!(keyboard.available() && keyboard.read() == PS2_ENTER))
+    {
+        delay(100);
+        shutdown_process();
+    }
+    pwrup_time = 0;
+    display.backlight(1);
+    display.on();
     terminal.show();
-    Adc::begin();
     terminal.printLine("STCU v1.0 by kubas");
-    WiFi.softAP(SSID, PSWD);
-    controller_ip = WiFi.softAPIP();
-    terminal.printLine(format("CTRL IP {}", controller_ip.toString().c_str()));
-    server.begin(server_port, server_process);
-    meas.restart();
-    status_print.restart();
 }
 
 void loop() {
-    if (meas) {
-        meas.ack();
-        int pwr = adc_gen_p.value() - adc_gen_n.value();
-        charge += pwr;
-        pwr_sum += pwr;
-    }
-    if (status_print) {
-        status_print.ack();
-        status = format("P{:4} C{:6} {}{}",
-            pwr_sum/5,
-            charge,
-            digitalRead(PWR2_MEAS),
-            digitalRead(PWR1_MEAS));
-        pwr_sum = 0;
-    }
-    server.process();
-    Adc::process();
-    status.process();
     terminal.process();
+    shutdown_process();
 }
 
 } // namespace controller

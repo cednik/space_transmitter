@@ -5,8 +5,6 @@
 using fmt::print;
 using fmt::format;
 
-#include "debug.hpp"
-
 enum class DeviceType { CONTROLLER, FLASHER };
 DeviceType device_type = DeviceType::FLASHER;
 
@@ -29,16 +27,6 @@ void trap(const string& msg = "")
     }
 }
 
-#include "server.hpp"
-#include "syncTask.hpp"
-
-static const char SSID[] = "STIC";
-static const char PSWD[] = "1123581321";
-static const uint16_t server_port = 16384; // tcp
-static const uint16_t sync_port = 16384; // udp
-
-LineServer server;
-
 void buzzer(bool en) { digitalWrite(PIN_BUZZER_P, en ? BUZZER_ON : BUZZER_OFF); }
 
 std::vector<std::string> split(const std::string& str, char separator = ' ', size_t max = UINT_MAX) {
@@ -60,19 +48,18 @@ std::vector<std::string> split(const std::string& str, char separator = ' ', siz
     return res;
 }
 
-#include "cmd.hpp"
+#include "delayedTask.hpp"
+
 #include "controller.hpp"
 #include "flasher.hpp"
 
 void setup() {
-    wait(sec(1));
     Serial.begin(115200);
     init_hw();
     switch (device_type) {
         case DeviceType::CONTROLLER: controller::setup(); break;
         case DeviceType::FLASHER   :    flasher::setup(); break;
     }
-    debug(device_name + " started");
 }
 
 void loop() {
@@ -80,4 +67,5 @@ void loop() {
         case DeviceType::CONTROLLER: controller::loop(); break;
         case DeviceType::FLASHER   :    flasher::loop(); break;
     }
+    DelayedTask::process();
 }

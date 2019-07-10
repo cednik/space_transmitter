@@ -199,6 +199,7 @@ class TerminalScreen
             bool is_visible() const { return m_visible; }
 
             Line& line() { return m_input; }
+            Prompt& prompt() { return m_prompt; }
     private:
         Display& m_disp;
         pos_type m_line;
@@ -251,6 +252,11 @@ public:
         process();
     }
 
+    virtual void view_process() {
+        for(auto& l: m_output)
+            l->process();
+    }
+
     virtual void process() {
         for(auto& l: m_output)
             l->process();
@@ -273,7 +279,7 @@ public:
         }
     }
 
-private:
+//private:
 
     int m_x;
     int m_y;
