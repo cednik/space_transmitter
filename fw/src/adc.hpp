@@ -21,7 +21,7 @@ public:
         if (s_instances.empty())
             return;
         if (s_instances.front() == this) {
-            adcEnd(m_pin);
+            //adcEnd(m_pin);
             s_instances.pop();
             if (!s_instances.empty())
                 s_instances.front()->start();
@@ -39,11 +39,12 @@ public:
         }
     }
 
-    uint16_t value() const { return m_value; }
+    //uint16_t value() const { return m_value; }
+    uint16_t value() const { return analogRead(m_pin); }
 
 private:
     void start() {
-        adcStart(m_pin);
+        //adcStart(m_pin);
     }
 
     const uint8_t m_pin;
@@ -60,12 +61,14 @@ public:
     }
 
     static void process() {
+        return;
         if (s_instances.empty())
             return;
         Adc& adc = *s_instances.front();
-        if (adcBusy(adc.m_pin))
-            return;
-        adc.m_value = adcEnd(adc.m_pin);
+        // if (adcBusy(adc.m_pin))
+        //     return;
+        // adc.m_value = adcEnd(adc.m_pin);
+        adc.m_value = analogRead(adc.m_pin);
         s_instances.push(&adc);
         s_instances.pop();
         s_instances.front()->start();

@@ -48,7 +48,7 @@ public:
                 ++p_client;
             } else {
                 if (!p_client->buffer.empty()) {
-                    debug("Received incomplete packet:");
+                    print("Received incomplete packet:");
                     _onReceive(p_client);
                 }
                 p_client->client.stop();
