@@ -84,7 +84,7 @@ private:
 //StaticSemaphore_t I2C_master::s_mutex_memory[I2C_NUM_MAX];
 SemaphoreHandle_t I2C_master::s_mutex_handle[I2C_NUM_MAX] = { 0 };
 
-auto i2c_scan (I2C_master& i2c) {
+std::vector<I2C_master::address_type> i2c_scan (I2C_master& i2c) {
     std::vector<I2C_master::address_type> ret;
     I2C_master::data_type data = 0;
     for (I2C_master::address_type i = 1; i != 128; ++i) {

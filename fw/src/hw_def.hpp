@@ -53,7 +53,7 @@ enum LED_CHANNEL {
 uint8_t BUZZER_ON = HIGH;
 uint8_t BUZZER_OFF = LOW;
 
-const int LED_COUNT = 1;
+const int LED_COUNT = 1 + 5*60;
 const int LED_CHANNEL = 0;
 
 namespace detail {
@@ -100,6 +100,8 @@ const LED_MAP_t LED( {
     { "w", WHITE  },
     { "a", BUZZER }
 } );
+
+SmartLed leds( LED_WS2812B, LED_COUNT, PIN_ILED, LED_CHANNEL, SingleBuffer );
 
 void init_hw(void) {
     pinMode(PWR1_MEAS, INPUT);

@@ -155,21 +155,63 @@ void setup() {
     display.backlight(0);
     display.off();
     s.restart();
-    while (!(keyboard.available() && keyboard.read() == PS2_ENTER))
-    {
-        delay(100);
-        shutdown_process();
-    }
-    pwrup_time = 0;
-    display.backlight(1);
-    display.on();
-    terminal.show();
-    terminal.printLine("STCU v1.0 by kubas");
+    // while (!(keyboard.available() && keyboard.read() == PS2_ENTER))
+    // {
+    //     delay(100);
+    //     shutdown_process();
+    // }
+    // pwrup_time = 0;
+    // display.backlight(1);
+    // display.on();
+    // terminal.show();
+    // terminal.printLine("STCU v1.0 by kubas");
 }
 
+timeout blik(msec(1));
+uint8_t hue;
+void showGradient() {
+    hue++;
+    // Use HSV to create nice gradient
+    for ( int i = 0; i != LED_COUNT; i++ )
+        leds[ i ] = Hsv{ static_cast< uint8_t >( hue + 30 * i ), 255, 255 };
+    // Show is asynchronous; if we need to wait for the end of transmission,
+    // we can use leds.wait(); however we use double buffered mode, so we
+    // can start drawing right after showing.
+}
+int _offset = 0;
+int offset(int v) {
+    int res = 1 + (v + _offset) % (LED_COUNT - 1);
+    //print("v {:d}\to {:d}\tr {:d}\n", v, _offset, res);
+    return res;
+}
+bool fallback = 0;
+int mode = 0;
 void loop() {
     terminal.process();
     shutdown_process();
+    if (mode == 0 || blik) {
+        switch (mode)
+        case 0:
+            blik.force();
+            showGradient();
+            break;
+        case 1:
+            leds[0] = ((_offset % 100) > 50 ) ? Rgb(64, 64, 64) : Rgb(0, 0, 0);
+            for (int i = 1; i != LED_COUNT; ++i) {
+                if (i % (LED_COUNT / 10) == 0)
+                    leds[offset(i)] = Rgb(64, 64, 64);
+                else
+                    leds[offset(i)] = Rgb(0, 0, 0);
+            }
+            ++_offset;
+            break;
+        case 2:
+
+        }
+        leds.wait();
+        leds.show();
+        //print("blik\n");
+    }
 }
 
 } // namespace controller
